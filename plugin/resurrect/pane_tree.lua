@@ -110,8 +110,15 @@ local function insert_panes(root, panes)
 			-- only saving local scrollback because it would slow down the process
 			-- See: https://github.com/MLFlexer/resurrect.wezterm/issues/41
 			root.alt_screen_active = root.pane:is_alt_screen_active()
-			if root.alt_screen_active then
-				local process_info = root.pane:get_foreground_process_info()
+
+			-- Also check if the foreground process has a registered handler
+			-- (e.g., Claude Code). Some TUI apps don't use the alt screen
+			-- buffer, but we still need to save their process info for
+			-- proper restoration instead of dumping scrollback text.
+			local process_info = root.pane:get_foreground_process_info()
+			local has_handler = process_handlers.find_handler(process_info)
+
+			if root.alt_screen_active or has_handler then
 				process_info.children = nil
 				process_info.pid = nil
 				process_info.ppid = nil

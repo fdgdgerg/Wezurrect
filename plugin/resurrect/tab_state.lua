@@ -172,8 +172,10 @@ pub.process_restore_delay_seconds = 3
 function pub.default_on_pane_restore(pane_tree)
 	local pane = pane_tree.pane
 
-	-- Spawn process if using alt screen, otherwise restore text
-	if pane_tree.alt_screen_active and pane_tree.process and pane_tree.process.argv then
+	-- Spawn process if process info was saved (alt screen OR registered handler),
+	-- otherwise restore scrollback text. Some TUI apps (e.g., Claude Code) don't
+	-- use the alt screen buffer but still need process-based restoration.
+	if pane_tree.process and pane_tree.process.argv then
 		-- Check registered process handlers first (e.g., Claude Code)
 		local restore_cmd = process_handlers.get_restore_command(pane_tree.process, pane_tree)
 		if not restore_cmd then
