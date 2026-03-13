@@ -3,8 +3,40 @@ local function is_windows()
 end
 
 -- Minimal wezterm stub for utils.lua.
+-- run_child_process is required by shell_mkdir in utils.lua.
+-- This stub delegates to os.execute so that mkdir actually works in tests.
 local wezterm_stub = {
   target_triple = is_windows() and "x86_64-pc-windows-msvc" or "x86_64-unknown-linux-gnu",
+  run_child_process = function(cmd_args)
+    local cmd
+    if is_windows() then
+      -- cmd_args is {"cmd.exe", "/c", "mkdir", path}
+      local parts = {}
+      for i, v in ipairs(cmd_args) do
+        if v:find(" ") then
+          parts[i] = '"' .. v .. '"'
+        else
+          parts[i] = v
+        end
+      end
+      cmd = table.concat(parts, " ")
+    else
+      -- cmd_args is {"mkdir", path}
+      local parts = {}
+      for i, v in ipairs(cmd_args) do
+        parts[i] = "'" .. v:gsub("'", "'\\''") .. "'"
+      end
+      cmd = table.concat(parts, " ")
+    end
+    local ok = os.execute(cmd)
+    -- Lua 5.4: os.execute returns true/nil, "exit"/"signal", code
+    -- Lua 5.1: os.execute returns exit code (0 = success)
+    if ok == true or ok == 0 then
+      return true, "", ""
+    else
+      return false, "", "command failed"
+    end
+  end,
 }
 _G.wezterm = wezterm_stub
 package.preload["wezterm"] = function()
