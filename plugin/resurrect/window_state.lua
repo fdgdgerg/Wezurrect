@@ -3,7 +3,6 @@ local tab_state_mod = require("resurrect.tab_state")
 local state_manager_mod = require("resurrect.state_manager")
 local pub = {}
 
-
 ---Returns the state of the window
 ---@param window MuxWindow
 ---@return window_state
@@ -88,6 +87,30 @@ function pub.restore_window(window, window_state, opts)
 end
 
 function pub.save_window_action()
+	return wezterm.action_callback(function(win, pane)
+		local mux_win = win:mux_window()
+		-- if mux_win:get_title() == "" then
+		win:perform_action(
+			wezterm.action.PromptInputLine({
+				description = "Enter new window title",
+				action = wezterm.action_callback(function(window, _, title)
+					if title then
+						window:mux_window():set_title(title)
+						local state = pub.get_window_state(mux_win)
+						state_manager_mod.save_state(state)
+					end
+				end),
+			}),
+			pane
+		)
+		-- elseif mux_win:get_title() then
+		-- 	local state = pub.get_window_state(mux_win)
+		-- 	state_manager_mod.save_state(state)
+		-- end
+	end)
+end
+
+function pub.quicksave_window_action()
 	return wezterm.action_callback(function(win, pane)
 		local mux_win = win:mux_window()
 		if mux_win:get_title() == "" then
