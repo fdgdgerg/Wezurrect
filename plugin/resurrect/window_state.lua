@@ -89,6 +89,7 @@ end
 function pub.save_window_action5()
 	return wezterm.action_callback(function(win, pane)
 		local mux_win = win:mux_window()
+		wezterm.log_info("test")
 		win:perform_action(
 			wezterm.action.PromptInputLine({
 				description = "Enter new window title",
