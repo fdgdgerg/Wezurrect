@@ -86,10 +86,9 @@ function pub.restore_window(window, window_state, opts)
 	wezterm.emit("resurrect.window_state.restore_window.finished")
 end
 
-function pub.save_window_action()
+function pub.save_window_action5()
 	return wezterm.action_callback(function(win, pane)
 		local mux_win = win:mux_window()
-		-- if mux_win:get_title() == "" then
 		win:perform_action(
 			wezterm.action.PromptInputLine({
 				description = "Enter new window title",
@@ -103,35 +102,31 @@ function pub.save_window_action()
 			}),
 			pane
 		)
-		-- elseif mux_win:get_title() then
-		-- 	local state = pub.get_window_state(mux_win)
-		-- 	state_manager_mod.save_state(state)
-		-- end
 	end)
 end
 
-function pub.quicksave_window_action()
-	return wezterm.action_callback(function(win, pane)
-		local mux_win = win:mux_window()
-		if mux_win:get_title() == "" then
-			win:perform_action(
-				wezterm.action.PromptInputLine({
-					description = "Enter new window title",
-					action = wezterm.action_callback(function(window, _, title)
-						if title then
-							window:mux_window():set_title(title)
-							local state = pub.get_window_state(mux_win)
-							state_manager_mod.save_state(state)
-						end
-					end),
-				}),
-				pane
-			)
-		elseif mux_win:get_title() then
-			local state = pub.get_window_state(mux_win)
-			state_manager_mod.save_state(state)
-		end
-	end)
-end
+-- function pub.quicksave_window_action()
+-- 	return wezterm.action_callback(function(win, pane)
+-- 		local mux_win = win:mux_window()
+-- 		if mux_win:get_title() == "" then
+-- 			win:perform_action(
+-- 				wezterm.action.PromptInputLine({
+-- 					description = "Enter new window title",
+-- 					action = wezterm.action_callback(function(window, _, title)
+-- 						if title then
+-- 							window:mux_window():set_title(title)
+-- 							local state = pub.get_window_state(mux_win)
+-- 							state_manager_mod.save_state(state)
+-- 						end
+-- 					end),
+-- 				}),
+-- 				pane
+-- 			)
+-- 		elseif mux_win:get_title() then
+-- 			local state = pub.get_window_state(mux_win)
+-- 			state_manager_mod.save_state(state)
+-- 		end
+-- 	end)
+-- end
 
 return pub
