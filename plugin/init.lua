@@ -7,7 +7,7 @@ local function init()
 	-- enable_sub_modules()
 	local opts = {
 		auto = true,
-		keywords = { "fdgdgerg", "resurrect", "wezterm" },
+		keywords = { "fdgdgerg", "resurrect", "wezterm", "Wezurrect" },
 	}
 	local plugin_path = dev.setup(opts)
 
